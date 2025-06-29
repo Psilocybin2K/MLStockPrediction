@@ -11,7 +11,7 @@
         public new List<EnhancedMarketFeatures> CreateMarketFeatures(
             Dictionary<string, List<StockData>> allStockData)
         {
-            Console.WriteLine("🔧 Creating enhanced market features...");
+            Console.WriteLine("🔧 Creating enhanced market features with temporal patterns...");
             List<EnhancedMarketFeatures> features = new List<EnhancedMarketFeatures>();
 
             if (!allStockData.ContainsKey("DOW") ||
@@ -74,18 +74,23 @@
                 // Calculate enhanced technical features
                 this.CalculateEnhancedFeatures(feature, dowHistory, qqqHistory, msftHistory);
 
+                // NEW: Calculate temporal & cyclical features
+                TemporalFeatureCalculator.CalculateTemporalFeatures(feature);
+
                 features.Add(feature);
 
                 // Log first few features for debugging
                 if (i <= 3)
                 {
-                    Console.WriteLine($"Enhanced Feature {i}: Date={date:yyyy-MM-dd}");
-                    Console.WriteLine($"   MSFT SMA20={feature.MsftSMA20:F2}, EMA Ratio={feature.MsftEMAR20:F4}");
-                    Console.WriteLine($"   Price Position={feature.MsftPricePosition:F4}, ATR={feature.MsftATR:F2}");
+                    Console.WriteLine($"Enhanced Feature {i}: Date={date:yyyy-MM-dd} ({date.DayOfWeek})");
+                    Console.WriteLine($"   Technical: MSFT SMA20={feature.MsftSMA20:F2}, EMA Ratio={feature.MsftEMAR20:F4}");
+                    Console.WriteLine($"   Temporal: Day={date.DayOfWeek}, Week={feature.IsOptionsExpirationWeek}, Quarter Progress={feature.QuarterProgress:F2}");
+                    Console.WriteLine($"   Cyclical: Earnings Season={feature.IsEarningsSeason}, Holiday Proximity={feature.DaysToMarketHoliday}");
                 }
             }
 
-            Console.WriteLine($"✅ Created {features.Count} enhanced market features");
+            Console.WriteLine($"✅ Created {features.Count} enhanced market features with temporal patterns");
+            Console.WriteLine($"📊 Total feature dimensions: 62 (9 original + 33 technical + 20 temporal)");
             return features;
         }
 
