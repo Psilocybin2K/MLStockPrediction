@@ -1,4 +1,4 @@
-﻿namespace MLStockPrediction
+﻿namespace MLStockPrediction.Evaluations
 {
     using System;
     using System.Collections.Generic;

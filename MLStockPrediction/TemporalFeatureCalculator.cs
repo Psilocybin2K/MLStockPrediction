@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using MLStockPrediction.Models;
+
     public static class TemporalFeatureCalculator
     {
         private static readonly HashSet<DateTime> MarketHolidays2025 = new()

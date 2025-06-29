@@ -1,4 +1,4 @@
-﻿namespace MLStockPrediction
+﻿namespace MLStockPrediction.Evaluations
 {
     using System;
     using System.Collections.Generic;
@@ -28,7 +28,7 @@
             for (int step = 0; step < totalSteps; step++)
             {
                 int trainStart = 0;
-                int trainEnd = initialTrainingSize + (step * stepSize);
+                int trainEnd = initialTrainingSize + step * stepSize;
                 int validStart = trainEnd;
                 int validEnd = Math.Min(validStart + validationWindow, allData.Count);
 
@@ -131,7 +131,7 @@
                 }
             }
 
-            double directionalAccuracy = predictions.Count > 1 ? (correctDirections / (double)(predictions.Count - 1)) * 100 : 0;
+            double directionalAccuracy = predictions.Count > 1 ? correctDirections / (double)(predictions.Count - 1) * 100 : 0;
 
             return new ValidationMetrics
             {
@@ -143,19 +143,5 @@
                 SampleCount = predictions.Count
             };
         }
-    }
-
-
-    public class WalkForwardFold
-    {
-        public int StepNumber { get; set; }
-        public DateTime TrainingStartDate { get; set; }
-        public DateTime TrainingEndDate { get; set; }
-        public DateTime ValidationStartDate { get; set; }
-        public DateTime ValidationEndDate { get; set; }
-        public int TrainingSamples { get; set; }
-        public int ValidationSamples { get; set; }
-        public ValidationMetrics UncalibratedResults { get; set; }
-        public ValidationMetrics CalibratedResults { get; set; }
     }
 }

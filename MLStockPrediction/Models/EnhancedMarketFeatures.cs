@@ -1,7 +1,5 @@
-﻿namespace MLStockPrediction
+﻿namespace MLStockPrediction.Models
 {
-    using MLStockPrediction.Models;
-
     public class EnhancedMarketFeatures : MarketFeatures
     {
         // Moving Averages for each asset

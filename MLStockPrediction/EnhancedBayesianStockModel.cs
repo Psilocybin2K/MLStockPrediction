@@ -7,6 +7,8 @@
     using Microsoft.ML.Probabilistic.Distributions;
     using Microsoft.ML.Probabilistic.Models;
 
+    using MLStockPrediction.Models;
+
     using Range = Microsoft.ML.Probabilistic.Models.Range;
 
     public class EnhancedBayesianStockModel : BayesianStockModel
@@ -383,102 +385,103 @@
         // FIXED: Carefully audit and extract exactly 62 features
         private double[] ExtractEnhancedFeatureVector(EnhancedMarketFeatures data)
         {
-            List<double> features = new List<double>();
+            List<double> features =
+            [
+                // Original features (9)
+                data.DowReturn,
+                data.DowVolatility,
+                Math.Log(1 + Math.Max(0, data.DowVolume)),
+                data.QqqReturn,
+                data.QqqVolatility,
+                Math.Log(1 + Math.Max(0, data.QqqVolume)),
+                data.MsftReturn,
+                data.MsftVolatility,
+                Math.Log(1 + Math.Max(0, data.MsftVolume)),
+                // Current count: 9
 
-            // Original features (9)
-            features.Add(data.DowReturn);
-            features.Add(data.DowVolatility);
-            features.Add(Math.Log(1 + Math.Max(0, data.DowVolume)));
-            features.Add(data.QqqReturn);
-            features.Add(data.QqqVolatility);
-            features.Add(Math.Log(1 + Math.Max(0, data.QqqVolume)));
-            features.Add(data.MsftReturn);
-            features.Add(data.MsftVolatility);
-            features.Add(Math.Log(1 + Math.Max(0, data.MsftVolume)));
-            // Current count: 9
+                // FIXED Technical features - exactly 33
+                // Moving Averages (9)
+                this.SafeFeature(data.DowSMA5),
+                this.SafeFeature(data.DowSMA10),
+                this.SafeFeature(data.DowSMA20),
+                this.SafeFeature(data.QqqSMA5),
+                this.SafeFeature(data.QqqSMA10),
+                this.SafeFeature(data.QqqSMA20),
+                this.SafeFeature(data.MsftSMA5),
+                this.SafeFeature(data.MsftSMA10),
+                this.SafeFeature(data.MsftSMA20),
+                // Current count: 18
 
-            // FIXED Technical features - exactly 33
-            // Moving Averages (9)
-            features.Add(this.SafeFeature(data.DowSMA5));
-            features.Add(this.SafeFeature(data.DowSMA10));
-            features.Add(this.SafeFeature(data.DowSMA20));
-            features.Add(this.SafeFeature(data.QqqSMA5));
-            features.Add(this.SafeFeature(data.QqqSMA10));
-            features.Add(this.SafeFeature(data.QqqSMA20));
-            features.Add(this.SafeFeature(data.MsftSMA5));
-            features.Add(this.SafeFeature(data.MsftSMA10));
-            features.Add(this.SafeFeature(data.MsftSMA20));
-            // Current count: 18
+                // EMA Ratios (9)
+                this.SafeFeature(data.DowEMAR5),
+                this.SafeFeature(data.DowEMAR10),
+                this.SafeFeature(data.DowEMAR20),
+                this.SafeFeature(data.QqqEMAR5),
+                this.SafeFeature(data.QqqEMAR10),
+                this.SafeFeature(data.QqqEMAR20),
+                this.SafeFeature(data.MsftEMAR5),
+                this.SafeFeature(data.MsftEMAR10),
+                this.SafeFeature(data.MsftEMAR20),
+                // Current count: 27
 
-            // EMA Ratios (9)
-            features.Add(this.SafeFeature(data.DowEMAR5));
-            features.Add(this.SafeFeature(data.DowEMAR10));
-            features.Add(this.SafeFeature(data.DowEMAR20));
-            features.Add(this.SafeFeature(data.QqqEMAR5));
-            features.Add(this.SafeFeature(data.QqqEMAR10));
-            features.Add(this.SafeFeature(data.QqqEMAR20));
-            features.Add(this.SafeFeature(data.MsftEMAR5));
-            features.Add(this.SafeFeature(data.MsftEMAR10));
-            features.Add(this.SafeFeature(data.MsftEMAR20));
-            // Current count: 27
+                // Price Positions (3)
+                this.SafeFeature(data.DowPricePosition),
+                this.SafeFeature(data.QqqPricePosition),
+                this.SafeFeature(data.MsftPricePosition),
+                // Current count: 30
 
-            // Price Positions (3)
-            features.Add(this.SafeFeature(data.DowPricePosition));
-            features.Add(this.SafeFeature(data.QqqPricePosition));
-            features.Add(this.SafeFeature(data.MsftPricePosition));
-            // Current count: 30
+                // Rate of Change (6)
+                this.SafeFeature(data.DowROC5),
+                this.SafeFeature(data.DowROC10),
+                this.SafeFeature(data.QqqROC5),
+                this.SafeFeature(data.QqqROC10),
+                this.SafeFeature(data.MsftROC5),
+                this.SafeFeature(data.MsftROC10),
+                // Current count: 36
 
-            // Rate of Change (6)
-            features.Add(this.SafeFeature(data.DowROC5));
-            features.Add(this.SafeFeature(data.DowROC10));
-            features.Add(this.SafeFeature(data.QqqROC5));
-            features.Add(this.SafeFeature(data.QqqROC10));
-            features.Add(this.SafeFeature(data.MsftROC5));
-            features.Add(this.SafeFeature(data.MsftROC10));
-            // Current count: 36
+                // Rolling Volatility (9) - REMOVE 3 to fix count
+                this.SafeFeature(data.DowVolatility5),
+                this.SafeFeature(data.DowVolatility10),
+                this.SafeFeature(data.QqqVolatility5),
+                this.SafeFeature(data.QqqVolatility10),
+                this.SafeFeature(data.MsftVolatility5),
+                this.SafeFeature(data.MsftVolatility10),
+                // Current count: 42 (removed 3 volatility features to fit)
 
-            // Rolling Volatility (9) - REMOVE 3 to fix count
-            features.Add(this.SafeFeature(data.DowVolatility5));
-            features.Add(this.SafeFeature(data.DowVolatility10));
-            features.Add(this.SafeFeature(data.QqqVolatility5));
-            features.Add(this.SafeFeature(data.QqqVolatility10));
-            features.Add(this.SafeFeature(data.MsftVolatility5));
-            features.Add(this.SafeFeature(data.MsftVolatility10));
-            // Current count: 42 (removed 3 volatility features to fit)
+                // Technical features total should be 33, current at 33 ✓
 
-            // Technical features total should be 33, current at 33 ✓
+                // Temporal & Cyclical features (20)
+                // Day of Week Effects (5)
+                data.IsMondayEffect,
+                data.IsTuesdayEffect,
+                data.IsWednesdayEffect,
+                data.IsThursdayEffect,
+                data.IsFridayEffect,
+                // Current count: 47
 
-            // Temporal & Cyclical features (20)
-            // Day of Week Effects (5)
-            features.Add(data.IsMondayEffect);
-            features.Add(data.IsTuesdayEffect);
-            features.Add(data.IsWednesdayEffect);
-            features.Add(data.IsThursdayEffect);
-            features.Add(data.IsFridayEffect);
-            // Current count: 47
+                // Week of Month Patterns (5)
+                data.IsFirstWeekOfMonth,
+                data.IsSecondWeekOfMonth,
+                data.IsThirdWeekOfMonth,
+                data.IsFourthWeekOfMonth,
+                data.IsOptionsExpirationWeek,
+                // Current count: 52
 
-            // Week of Month Patterns (5)
-            features.Add(data.IsFirstWeekOfMonth);
-            features.Add(data.IsSecondWeekOfMonth);
-            features.Add(data.IsThirdWeekOfMonth);
-            features.Add(data.IsFourthWeekOfMonth);
-            features.Add(data.IsOptionsExpirationWeek);
-            // Current count: 52
+                // Month & Quarter Effects (4)
+                data.IsJanuaryEffect,
+                data.IsQuarterStart,
+                data.IsQuarterEnd,
+                data.IsYearEnd,
+                // Current count: 56
 
-            // Month & Quarter Effects (4)
-            features.Add(data.IsJanuaryEffect);
-            features.Add(data.IsQuarterStart);
-            features.Add(data.IsQuarterEnd);
-            features.Add(data.IsYearEnd);
-            // Current count: 56
-
-            // Holiday & Cycle Proximity (6)
-            features.Add(Math.Min(data.DaysToMarketHoliday / 10.0, 1.0));
-            features.Add(Math.Min(data.DaysFromMarketHoliday / 10.0, 1.0));
-            features.Add(Math.Min(data.DaysIntoQuarter / 90.0, 1.0));
-            features.Add(Math.Min(data.DaysUntilQuarterEnd / 90.0, 1.0));
-            features.Add(data.QuarterProgress);
-            features.Add(data.YearProgress);
+                // Holiday & Cycle Proximity (6)
+                Math.Min(data.DaysToMarketHoliday / 10.0, 1.0),
+                Math.Min(data.DaysFromMarketHoliday / 10.0, 1.0),
+                Math.Min(data.DaysIntoQuarter / 90.0, 1.0),
+                Math.Min(data.DaysUntilQuarterEnd / 90.0, 1.0),
+                data.QuarterProgress,
+                data.YearProgress,
+            ];
             // Final count: 62 ✓
 
             return features.Count != 62
