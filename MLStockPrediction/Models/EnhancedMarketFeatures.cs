@@ -1,6 +1,58 @@
 ﻿namespace MLStockPrediction.Models
 {
-    public class EnhancedMarketFeatures : MarketFeatures
+    // Extension of EnhancedMarketFeatures for ensemble learning
+    public partial class EnhancedMarketFeatures
+    {
+        // Momentum Indicators
+        public double MsftRSI { get; set; }
+        public double DowRSI { get; set; }
+        public double QqqRSI { get; set; }
+        public double MsftMACD { get; set; }
+        public double MsftMomentum20 { get; set; }
+        public double DowMomentum20 { get; set; }
+        public double MsftStochastic { get; set; }
+
+        // Volume-Price Relationships  
+        public double MsftOBV { get; set; }
+        public double MsftVWAP { get; set; }
+        public double MsftVolumeROC { get; set; }
+        public double MsftPVT { get; set; }
+
+        // Volatility Indicators
+        public double MsftBBSqueeze { get; set; }
+        public double MsftTrueRange { get; set; }
+        public double MsftVolBreakout { get; set; }
+
+        // Lag Features
+        public double MsftReturn_Lag1 { get; set; }
+        public double MsftReturn_Lag2 { get; set; }
+        public double MsftReturn_Lag5 { get; set; }
+        public double MsftVolatility_Lag1 { get; set; }
+        public double DowReturn_Lag1 { get; set; }
+        public double DowReturn_Lag2 { get; set; }
+        public double QqqReturn_Lag5 { get; set; }
+
+        // Rolling Differences
+        public double MsftSMA5_Diff { get; set; }
+        public double MsftSMA20_Diff { get; set; }
+
+        // Interaction Features
+        public double DowMsftMomentumRatio { get; set; }
+        public double QqqMsftMomentumRatio { get; set; }
+        public double MsftVolumeVolatilityProduct { get; set; }
+        public double MsftDowPricePositionDiff { get; set; }
+        public double MsftQqqPricePositionDiff { get; set; }
+        public double MsftSMA5_SMA20_Ratio { get; set; }
+        public double MsftSMA10_SMA20_Ratio { get; set; }
+
+        // Regime Indicators
+        public double IsHighVolatilityRegime { get; set; }
+        public double IsLowVolumeRegime { get; set; }
+        public double IsStrongUptrend { get; set; }
+        public double IsStrongDowntrend { get; set; }
+    }
+
+    public partial class EnhancedMarketFeatures : MarketFeatures
     {
         // Moving Averages for each asset
         public double DowSMA5 { get; set; }

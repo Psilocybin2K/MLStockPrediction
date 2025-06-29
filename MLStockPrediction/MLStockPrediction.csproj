@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.1.0" />
+    <PackageReference Include="Microsoft.ML" Version="5.0.0-preview.1.25127.4" />
+    <PackageReference Include="Microsoft.ML.LightGbm" Version="5.0.0-preview.1.25127.4" />
     <PackageReference Include="Microsoft.ML.Probabilistic" Version="0.4.2504.701" />
     <PackageReference Include="Microsoft.ML.Probabilistic.Compiler" Version="0.4.2504.701" />
     <PackageReference Include="Microsoft.ML.Probabilistic.Learners" Version="0.4.2504.701" />
