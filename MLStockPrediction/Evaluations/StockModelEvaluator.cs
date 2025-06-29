@@ -8,8 +8,8 @@
 
     public class StockModelEvaluator
     {
-        public StockEvaluationReport EvaluateEnhancedModel(
-            EnhancedBayesianStockModel model,
+        public StockEvaluationReport EvaluateModel(
+            BayesianStockModel model,
             List<EnhancedMarketFeatures> testData)
         {
             Console.WriteLine($"🔍 Evaluating enhanced model on {testData.Count} test samples...");
@@ -211,7 +211,7 @@
         public void PrintEvaluationReport(StockEvaluationReport report)
         {
             Console.WriteLine("\n" + "=".PadRight(60, '='));
-            Console.WriteLine("📊 ENHANCED STOCK PREDICTION MODEL EVALUATION");
+            Console.WriteLine("📊 STOCK PREDICTION MODEL EVALUATION");
             Console.WriteLine("=".PadRight(60, '='));
 
             Console.WriteLine($"\n🎯 SAMPLE SIZE: {report.SampleSize:N0}");

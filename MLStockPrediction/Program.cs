@@ -14,11 +14,11 @@
     {
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("🚀 Starting Enhanced Bayesian Stock Prediction with Fixed Features");
+            Console.WriteLine("🚀 Starting Enhanced Bayesian Stock Prediction with Unified Model");
 
             StockDataLoader loader = new StockDataLoader();
-            EnhancedMarketFeatureEngine featureEngine = new EnhancedMarketFeatureEngine();
-            EnhancedBayesianStockModel enhancedModel = new EnhancedBayesianStockModel();
+            MarketFeatureEngine featureEngine = new MarketFeatureEngine();
+            BayesianStockModel model = new BayesianStockModel();
             StockModelEvaluator evaluator = new StockModelEvaluator();
             WalkForwardValidator walkForwardValidator = new WalkForwardValidator();
 
@@ -30,14 +30,14 @@
                 loader.DisplayStockSummary(allStockData);
 
                 // Create enhanced market features
-                List<EnhancedMarketFeatures> enhancedFeatures = featureEngine.CreateMarketFeatures(allStockData);
+                List<EnhancedMarketFeatures> enhancedFeatures = featureEngine.CreateEnhancedMarketFeatures(allStockData);
                 Console.WriteLine($"\n=== Enhanced Market Features Created ===");
                 Console.WriteLine($"Enhanced feature records: {enhancedFeatures.Count}");
-                Console.WriteLine($"Feature dimensions: 62 (9 original + 33 technical + 20 temporal) - FIXED");
+                Console.WriteLine($"Feature dimensions: 62 (9 original + 33 technical + 20 temporal) - UNIFIED ENGINE");
 
                 if (enhancedFeatures.Count > 60)
                 {
-                    // NEW: Walk-Forward Validation
+                    // Walk-Forward Validation
                     Console.WriteLine("\n🔄 Performing Walk-Forward Validation...");
                     WalkForwardValidationResult walkForwardResult = walkForwardValidator.ValidateModel(
                         enhancedFeatures,
@@ -58,23 +58,23 @@
                     Console.WriteLine($"📅 Training Period: {trainData.First().Date:yyyy-MM-dd} to {trainData.Last().Date:yyyy-MM-dd}");
                     Console.WriteLine($"📅 Testing Period: {testData.First().Date:yyyy-MM-dd} to {testData.Last().Date:yyyy-MM-dd}");
 
-                    // Train final enhanced Bayesian model
-                    Console.WriteLine("\n🎯 Training Final Enhanced Model with Fixed Features...");
-                    enhancedModel.Train(trainData);
-                    Console.WriteLine($"✅ Enhanced Bayesian model trained on {trainData.Count} samples with exactly 62 features");
+                    // Train final unified Bayesian model
+                    Console.WriteLine("\n🎯 Training Final Unified Model with Enhanced Features...");
+                    model.Train(trainData);
+                    Console.WriteLine($"✅ Unified Bayesian model trained on {trainData.Count} samples with exactly 62 features");
 
                     // Test both uncalibrated and calibrated models
                     Console.WriteLine("\n🔍 Evaluating Model Performance (Uncalibrated vs Calibrated)...");
 
                     // Test uncalibrated first
-                    enhancedModel.EnableCalibration(false);
-                    StockEvaluationReport uncalibratedReport = evaluator.EvaluateEnhancedModel(enhancedModel, testData);
+                    model.EnableCalibration(false);
+                    StockEvaluationReport uncalibratedReport = evaluator.EvaluateModel(model, testData);
                     Console.WriteLine("\n📊 UNCALIBRATED MODEL PERFORMANCE:");
                     evaluator.PrintEvaluationReport(uncalibratedReport);
 
                     // Test calibrated
-                    enhancedModel.EnableCalibration(true);
-                    StockEvaluationReport calibratedReport = evaluator.EvaluateEnhancedModel(enhancedModel, testData);
+                    model.EnableCalibration(true);
+                    StockEvaluationReport calibratedReport = evaluator.EvaluateModel(model, testData);
                     Console.WriteLine("\n📊 CALIBRATED MODEL PERFORMANCE:");
                     evaluator.PrintEvaluationReport(calibratedReport);
 
@@ -91,12 +91,12 @@
                     Console.WriteLine($"\n🔮 Making Final Predictions for {latest.Date:yyyy-MM-dd}...");
 
                     // Uncalibrated prediction
-                    enhancedModel.EnableCalibration(false);
-                    (double uncalLow, double uncalHigh) = enhancedModel.Predict(latest);
+                    model.EnableCalibration(false);
+                    (double uncalLow, double uncalHigh) = model.Predict(latest);
 
                     // Calibrated prediction
-                    enhancedModel.EnableCalibration(true);
-                    (double calLow, double calHigh) = enhancedModel.Predict(latest);
+                    model.EnableCalibration(true);
+                    (double calLow, double calHigh) = model.Predict(latest);
 
                     Console.WriteLine($"\n=== MSFT Prediction Comparison for {latest.Date:yyyy-MM-dd} ===");
                     Console.WriteLine($"Actual Low: ${latest.MsftLow:F2}, High: ${latest.MsftHigh:F2}");
@@ -113,7 +113,7 @@
                     Console.WriteLine($"   MSFT EMA Ratio (20-day): {latest.MsftEMAR20:F4}");
                     Console.WriteLine($"   MSFT Price Position: {latest.MsftPricePosition:F2} (0=low, 1=high in 20-day range)");
                     Console.WriteLine($"   MSFT ROC (10-day): {latest.MsftROC10:F4}");
-                    Console.WriteLine($"   MSFT Volatility (20-day): {latest.MsftVolatility20:F4}");
+                    Console.WriteLine($"   MSFT Volatility (10-day): {latest.MsftVolatility10:F4}");
                     Console.WriteLine($"   MSFT ATR: ${latest.MsftATR:F2}");
                     Console.WriteLine($"   MSFT Bollinger Position: {latest.MsftBBPosition:F2} (0=center, ±1=bands)");
 
@@ -125,15 +125,41 @@
                     Console.WriteLine($"   Days to Holiday: {latest.DaysToMarketHoliday}");
                     Console.WriteLine($"   Earnings Season: {latest.IsEarningsSeason == 1.0}");
 
+                    // Demonstrate basic model capability as well
+                    Console.WriteLine($"\n🔄 Testing Basic Model Capability...");
+
+                    // Create basic features using the unified engine
+                    List<MarketFeatures> basicFeatures = featureEngine.CreateMarketFeatures(allStockData);
+
+                    List<MarketFeatures> basicTrainData = basicFeatures.Take(trainSize).ToList();
+                    List<MarketFeatures> basicTestData = basicFeatures.Skip(trainSize).ToList();
+
+                    // Train basic model
+                    BayesianStockModel basicModel = new BayesianStockModel();
+                    basicModel.Train(basicTrainData);
+
+                    // Evaluate basic model
+                    StockEvaluationReport basicReport = evaluator.EvaluateModel(basicModel, basicTestData);
+                    Console.WriteLine("\n📊 BASIC MODEL PERFORMANCE (9 features):");
+                    evaluator.PrintEvaluationReport(basicReport);
+
+                    // Compare basic vs enhanced
+                    Console.WriteLine("\n📈 ENHANCED vs BASIC MODEL COMPARISON:");
+                    Console.WriteLine($"   Enhanced Model MAPE: Low={calibratedReport.LowPriceMetrics.MAPE:F2}%, High={calibratedReport.HighPriceMetrics.MAPE:F2}%");
+                    Console.WriteLine($"   Basic Model MAPE: Low={basicReport.LowPriceMetrics.MAPE:F2}%, High={basicReport.HighPriceMetrics.MAPE:F2}%");
+                    Console.WriteLine($"   Enhancement Improvement: Low={basicReport.LowPriceMetrics.MAPE - calibratedReport.LowPriceMetrics.MAPE:F2}pp, High={basicReport.HighPriceMetrics.MAPE - calibratedReport.HighPriceMetrics.MAPE:F2}pp");
+
                     // Feature engineering effectiveness summary
-                    Console.WriteLine($"\n🎯 MODEL ENHANCEMENT SUMMARY:");
-                    Console.WriteLine($"   ✅ Fixed feature vector size: 62 features exactly");
-                    Console.WriteLine($"   ✅ Added bias correction calibration");
-                    Console.WriteLine($"   ✅ Implemented walk-forward validation");
-                    Console.WriteLine($"   ✅ Integrated 20 temporal/cyclical features");
-                    Console.WriteLine($"   ✅ Enhanced with 33 technical indicators");
+                    Console.WriteLine($"\n🎯 UNIFIED SYSTEM SUMMARY:");
+                    Console.WriteLine($"   ✅ Single MarketFeatureEngine handles both basic and enhanced features");
+                    Console.WriteLine($"   ✅ Single BayesianStockModel handles both feature types");
+                    Console.WriteLine($"   ✅ Automatic feature detection and processing");
+                    Console.WriteLine($"   ✅ Hold-out bias correction calibration");
+                    Console.WriteLine($"   ✅ Walk-forward validation framework");
+                    Console.WriteLine($"   ✅ Integrated temporal/cyclical and technical features");
                     Console.WriteLine($"   📊 Walk-forward average MAPE: {walkForwardResult.AverageCalibratedLowMAPE:F2}%/{walkForwardResult.AverageCalibratedHighMAPE:F2}%");
                     Console.WriteLine($"   📊 Walk-forward directional accuracy: {walkForwardResult.AverageDirectionalAccuracy:F1}%");
+                    Console.WriteLine($"   📊 Enhancement value: {basicReport.LowPriceMetrics.MAPE - calibratedReport.LowPriceMetrics.MAPE:F2}pp improvement over basic model");
                 }
                 else
                 {

@@ -46,8 +46,8 @@
                 List<EnhancedMarketFeatures> trainData = allData.GetRange(trainStart, trainEnd - trainStart);
                 List<EnhancedMarketFeatures> validData = allData.GetRange(validStart, validEnd - validStart);
 
-                // FIXED: Train model (now uses hold-out calibration internally)
-                EnhancedBayesianStockModel model = new EnhancedBayesianStockModel();
+                // Train model (now uses hold-out calibration internally)
+                BayesianStockModel model = new BayesianStockModel();
                 model.Train(trainData);
 
                 // Test without calibration first
@@ -90,7 +90,7 @@
             return result;
         }
 
-        private ValidationMetrics EvaluateFold(EnhancedBayesianStockModel model, List<EnhancedMarketFeatures> validationData, string description)
+        private ValidationMetrics EvaluateFold(BayesianStockModel model, List<EnhancedMarketFeatures> validationData, string description)
         {
             List<StockPredictionResult> predictions = new List<StockPredictionResult>();
 
