@@ -1,4 +1,4 @@
-This document provides a detailed analysis and summary of your ensemble stock prediction machine learning model.
+﻿This document provides a detailed analysis and summary of your ensemble stock prediction machine learning model.
 
 ### **1. Overview**
 
@@ -114,3 +114,82 @@ This ensemble stock prediction model is a well-structured and sophisticated syst
 * **Robust Validation**: The use of walk-forward validation provides a high degree of confidence in the model's performance metrics.
 
 The code is well-organized, with clear separation of concerns between data loading, feature engineering, modeling, and evaluation. This makes the system relatively easy to understand, maintain, and extend.
+
+
+## Latest Performance
+
+```markdown
+
+============================================================
+?? STOCK PREDICTION MODEL EVALUATION
+============================================================
+
+?? SAMPLE SIZE: 20
+
+?? LOW PRICE PREDICTIONS
+   MAE: $65.418
+   RMSE: $69.374
+   MAPE: 13.78%
+   Accuracy ≤1%: 0.0%
+   Accuracy ≤5%: 0.0%
+   ?? Accuracy Breakdown:
+      ≤10%: 20.0%
+      ≤100%: 100.0%
+      ≤20%: 85.0%
+      ≤30%: 100.0%
+      ≤40%: 100.0%
+      ≤50%: 100.0%
+      ≤60%: 100.0%
+      ≤70%: 100.0%
+      ≤80%: 100.0%
+      ≤90%: 100.0%
+
+?? HIGH PRICE PREDICTIONS
+   MAE: $63.292
+   RMSE: $66.877
+   MAPE: 13.15%
+   Accuracy ≤1%: 0.0%
+   Accuracy ≤5%: 0.0%
+   ?? Accuracy Breakdown:
+      ≤10%: 25.0%
+      ≤100%: 100.0%
+      ≤20%: 85.0%
+      ≤30%: 100.0%
+      ≤40%: 100.0%
+      ≤50%: 100.0%
+      ≤60%: 100.0%
+      ≤70%: 100.0%
+      ≤80%: 100.0%
+      ≤90%: 100.0%
+
+?? DIRECTIONAL ACCURACY
+   Low Price Direction: 73.7%
+   High Price Direction: 73.7%
+   Range Direction: 68.4%
+
+?? ERROR DISTRIBUTION
+   Low Price P50: 12.52%
+   Low Price P95: 23.04%
+   High Price P50: 11.78%
+   High Price P95: 21.29%
+
+?? ENSEMBLE vs BASIC MODEL COMPARISON:
+   Ensemble MAPE: Low=4.91%, High=4.85%
+   Basic Bayesian MAPE: Low=13.78%, High=13.15%
+   Ensemble Improvement: Low=8.87pp, High=8.31pp
+
+?? ENSEMBLE SYSTEM SUMMARY:
+   ? 2-Layer Ensemble: Bayesian + LightGBM models
+   ? Dynamic weight adjustment based on market regime
+   ? Enhanced feature engineering: ~85 features
+   ? Range validation using auxiliary LightGBM model
+   ? Hold-out bias correction calibration
+   ? Market regime detection and adaptation
+   ? Uncertainty quantification from Bayesian component
+   ? Pattern recognition from LightGBM component
+   ?? Walk-forward average MAPE: 4.59%/4.05%
+   ?? Walk-forward directional accuracy: 55.6%
+   ?? Ensemble improvement: 8.87pp over basic model
+   ?? Current market regime: Bull Trend
+   ??  Current weights: Bayesian=0.23, LightGBM=0.77
+```

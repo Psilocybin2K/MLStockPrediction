@@ -1,5 +1,6 @@
 ﻿namespace MLStockPrediction.Models
 {
+
     public class DirectionalAccuracy
     {
         public double LowDirectionalAccuracy { get; set; }

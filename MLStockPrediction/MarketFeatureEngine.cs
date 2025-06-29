@@ -160,6 +160,7 @@
                 Console.WriteLine("❌ Missing required stock data");
                 return false;
             }
+
             return true;
         }
 

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
     using Microsoft.ML.Probabilistic.Distributions;
@@ -141,7 +142,7 @@
             }
 
             double[] rawFeatureVector = this.ExtractFeatureVector(marketData);
-            Console.WriteLine($"Raw feature vector: [{string.Join(", ", rawFeatureVector.Select(x => $"{x:F4}"))}]");
+            Debug.WriteLine($"Raw feature vector: [{string.Join(", ", rawFeatureVector.Select(x => $"{x:F4}"))}]");
 
             // Normalize features using training statistics
             double[] normalizedFeatureVector = new double[rawFeatureVector.Length];
@@ -150,7 +151,7 @@
                 double normalizedValue = (rawFeatureVector[i] - this._featureMeans[i]) / this._featureStds[i];
                 normalizedFeatureVector[i] = Math.Max(-3.0, Math.Min(3.0, normalizedValue));
             }
-            Console.WriteLine($"Normalized feature vector: [{string.Join(", ", normalizedFeatureVector.Select(x => $"{x:F4}"))}]");
+            Debug.WriteLine($"Normalized feature vector: [{string.Join(", ", normalizedFeatureVector.Select(x => $"{x:F4}"))}]");
 
             return this.PredictInternal(normalizedFeatureVector);
         }
@@ -170,7 +171,7 @@
                 throw new InvalidOperationException($"Feature vector size mismatch: expected 62, got {rawFeatureVector.Length}. Fix feature extraction first.");
             }
 
-            Console.WriteLine($"Enhanced feature vector length: {rawFeatureVector.Length} (exactly 62 features ✓)");
+            Debug.WriteLine($"Enhanced feature vector length: {rawFeatureVector.Length} (exactly 62 features ✓)");
 
             // Normalize features using training statistics
             double[] normalizedFeatureVector = new double[rawFeatureVector.Length];
@@ -212,13 +213,13 @@
             {
                 lowPrediction += this._lowBiasCorrection;
                 highPrediction += this._highBiasCorrection;
-                Console.WriteLine($"Applied hold-out bias correction: Low+{this._lowBiasCorrection:F2}, High+{this._highBiasCorrection:F2}");
+                Debug.WriteLine($"Applied hold-out bias correction: Low+{this._lowBiasCorrection:F2}, High+{this._highBiasCorrection:F2}");
             }
 
             // Ensure high >= low
             if (highPrediction < lowPrediction)
             {
-                Console.WriteLine($"⚠️  Swapping predictions: High ({highPrediction:F2}) < Low ({lowPrediction:F2})");
+                Debug.WriteLine($"⚠️  Swapping predictions: High ({highPrediction:F2}) < Low ({lowPrediction:F2})");
                 (lowPrediction, highPrediction) = (highPrediction, lowPrediction);
             }
 
@@ -229,11 +230,11 @@
         {
             if (this._holdOutCalibrationData == null || this._holdOutCalibrationData.Count == 0)
             {
-                Console.WriteLine("⚠️  No hold-out data available for calibration");
+                Debug.WriteLine("⚠️  No hold-out data available for calibration");
                 return;
             }
 
-            Console.WriteLine($"📊 Calculating hold-out bias correction on {this._holdOutCalibrationData.Count} samples...");
+            Debug.WriteLine($"📊 Calculating hold-out bias correction on {this._holdOutCalibrationData.Count} samples...");
 
             List<double> lowErrors = new List<double>();
             List<double> highErrors = new List<double>();
@@ -252,10 +253,10 @@
             this._lowBiasCorrection = lowErrors.Average();
             this._highBiasCorrection = highErrors.Average();
 
-            Console.WriteLine($"📊 Hold-out bias corrections calculated:");
-            Console.WriteLine($"   Low bias correction: +{this._lowBiasCorrection:F2} (avg error on hold-out)");
-            Console.WriteLine($"   High bias correction: +{this._highBiasCorrection:F2} (avg error on hold-out)");
-            Console.WriteLine($"   Hold-out sample size: {lowErrors.Count}");
+            Debug.WriteLine($"📊 Hold-out bias corrections calculated:");
+            Debug.WriteLine($"   Low bias correction: +{this._lowBiasCorrection:F2} (avg error on hold-out)");
+            Debug.WriteLine($"   High bias correction: +{this._highBiasCorrection:F2} (avg error on hold-out)");
+            Debug.WriteLine($"   Hold-out sample size: {lowErrors.Count}");
         }
 
         private (double Low, double High) PredictWithoutCalibration(EnhancedMarketFeatures marketData)
@@ -302,7 +303,7 @@
                     this._featureStds[col] = 1.0;
                 }
 
-                Console.WriteLine($"Feature {col}: Mean={this._featureMeans[col]:F4}, Std={this._featureStds[col]:F4}");
+                Debug.WriteLine($"Feature {col}: Mean={this._featureMeans[col]:F4}, Std={this._featureStds[col]:F4}");
             }
 
             // Normalize features
@@ -333,13 +334,13 @@
             {
                 this._lowTargetMean = mean;
                 this._lowTargetStd = std;
-                Console.WriteLine($"Low Target Normalization: Mean={mean:F2}, Std={std:F2}");
+                Debug.WriteLine($"Low Target Normalization: Mean={mean:F2}, Std={std:F2}");
             }
             else
             {
                 this._highTargetMean = mean;
                 this._highTargetStd = std;
-                Console.WriteLine($"High Target Normalization: Mean={mean:F2}, Std={std:F2}");
+                Debug.WriteLine($"High Target Normalization: Mean={mean:F2}, Std={std:F2}");
             }
 
             return targets.Select(x => (x - mean) / std).ToArray();
@@ -387,11 +388,11 @@
             Gamma precision_post = this._engine.Infer<Gamma>(precision);
 
             // Log learned parameters
-            Console.WriteLine($"Learned bias: {bias_post.GetMean():F4} ± {Math.Sqrt(bias_post.GetVariance()):F4}");
-            Console.WriteLine($"Learned precision: {precision_post.GetMean():F4}");
+            Debug.WriteLine($"Learned bias: {bias_post.GetMean():F4} ± {Math.Sqrt(bias_post.GetVariance()):F4}");
+            Debug.WriteLine($"Learned precision: {precision_post.GetMean():F4}");
             for (int i = 0; i < Math.Min(weights_post.Length, 5); i++)
             {
-                Console.WriteLine($"Weight[{i}]: {weights_post[i].GetMean():F4} ± {Math.Sqrt(weights_post[i].GetVariance()):F4}");
+                Debug.WriteLine($"Weight[{i}]: {weights_post[i].GetMean():F4} ± {Math.Sqrt(weights_post[i].GetVariance()):F4}");
             }
 
             if (isLowModel)
@@ -452,11 +453,11 @@
             Gamma precision_post = this._engine.Infer<Gamma>(precision);
 
             // Log learned parameters
-            Console.WriteLine($"Enhanced learned bias: {bias_post.GetMean():F4} ± {Math.Sqrt(bias_post.GetVariance()):F4}");
-            Console.WriteLine($"Enhanced learned precision: {precision_post.GetMean():F4}");
+            Debug.WriteLine($"Enhanced learned bias: {bias_post.GetMean():F4} ± {Math.Sqrt(bias_post.GetVariance()):F4}");
+            Debug.WriteLine($"Enhanced learned precision: {precision_post.GetMean():F4}");
             for (int i = 0; i < Math.Min(weights_post.Length, 5); i++)
             {
-                Console.WriteLine($"Enhanced Weight[{i}]: {weights_post[i].GetMean():F4} ± {Math.Sqrt(weights_post[i].GetVariance()):F4}");
+                Debug.WriteLine($"Enhanced Weight[{i}]: {weights_post[i].GetMean():F4} ± {Math.Sqrt(weights_post[i].GetVariance()):F4}");
             }
 
             if (isLowModel)
@@ -506,7 +507,7 @@
             double[] sampleVector = this.ExtractEnhancedFeatureVector(data[0]);
             int actualFeatureCount = sampleVector.Length;
 
-            Console.WriteLine($"📊 Detected {actualFeatureCount} features in sample extraction");
+            Debug.WriteLine($"📊 Detected {actualFeatureCount} features in sample extraction");
 
             double[,] matrix = new double[n, actualFeatureCount];
 
@@ -664,7 +665,7 @@
             double max = data.Max();
             double std = Math.Sqrt(data.Select(x => Math.Pow(x - mean, 2)).Average());
 
-            Console.WriteLine($"📊 {name}: Mean={mean:F4}, Std={std:F4}, Min={min:F4}, Max={max:F4}");
+            Debug.WriteLine($"📊 {name}: Mean={mean:F4}, Std={std:F4}, Min={min:F4}, Max={max:F4}");
         }
 
         private void LogFeatureStatistics(string name, double[,] features)
@@ -672,7 +673,7 @@
             int rows = features.GetLength(0);
             int cols = features.GetLength(1);
 
-            Console.WriteLine($"📊 {name} Matrix: {rows}x{cols}");
+            Debug.WriteLine($"📊 {name} Matrix: {rows}x{cols}");
 
             for (int col = 0; col < Math.Min(cols, 8); col++)
             {
@@ -693,7 +694,7 @@
                     _ => "Temporal"
                 };
 
-                Console.WriteLine($"   {featureType} Feature[{col}]: Mean={mean:F4}, Min={min:F4}, Max={max:F4}");
+                Debug.WriteLine($"   {featureType} Feature[{col}]: Mean={mean:F4}, Min={min:F4}, Max={max:F4}");
             }
         }
     }
