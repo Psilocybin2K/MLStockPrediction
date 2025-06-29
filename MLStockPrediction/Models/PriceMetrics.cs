@@ -9,5 +9,6 @@
         public double MaxError { get; set; }
         public double AccuracyWithin1Percent { get; set; }
         public double AccuracyWithin5Percent { get; set; }
+        public Dictionary<string, double> AccuracyBreakdown { get; set; } = new Dictionary<string, double>();
     }
 }
