@@ -4,7 +4,7 @@
 
 The system is an ensemble machine learning model designed to predict the next day's low and high prices for Microsoft stock (MSFT). It leverages a sophisticated approach that combines a **Bayesian linear regression model** with a **LightGBM (Light Gradient Boosting Machine) model**. The ensemble methodology aims to capitalize on the strengths of both models: the Bayesian model's ability to quantify uncertainty and the LightGBM's proficiency in capturing complex, non-linear patterns in the data.
 
-The model is written in C# and utilizes the ML.NET library for the LightGBM implementation and Microsoft's own probabilistic computing framework for the Bayesian model.
+The model is written in C# and utilizes the ML.NET library for the LightGBM implementation and Microsoft's Infer.NET probabilistic computing framework for the Bayesian model.
 
 ### **2. Data Loading and Preparation**
 
